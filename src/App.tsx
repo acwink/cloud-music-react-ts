@@ -1,17 +1,16 @@
 import React from "react";
-import { useState } from "react";
+import { useRoutes } from "react-router-dom";
 
 import { GlobalStyle } from "./style";
 import { IconStyle } from "./assets/iconfont/iconfont";
+import routes from "./routes/index";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <div className="App">
       <GlobalStyle />
       <IconStyle />
-      <i className="iconfont">&#xe62b;</i>
+      {useRoutes(routes)}
     </div>
   );
 }
