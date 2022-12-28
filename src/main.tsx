@@ -9,13 +9,11 @@ import theme from "./assets/theme/global-style";
 import store from "./store/index";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <HashRouter>
-      <ThemeProvider theme={theme}>
-        <Provider store={store}>
-          <App />
-        </Provider>
-      </ThemeProvider>
-    </HashRouter>
-  </React.StrictMode>
+  <HashRouter>
+    <ThemeProvider theme={theme}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </ThemeProvider>
+  </HashRouter>
 );

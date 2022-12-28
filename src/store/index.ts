@@ -1,8 +1,14 @@
-import { createStore, compose, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
-import reducer from "./reducer";
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+import { configureStore } from "@reduxjs/toolkit";
+import recommendReducer from "./modules/recommend";
+import singerReducer from "./modules/singers";
 
-const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
+const store = configureStore({
+  reducer: {
+    recommend: recommendReducer,
+    singers: singerReducer,
+  },
+});
 
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 export default store;

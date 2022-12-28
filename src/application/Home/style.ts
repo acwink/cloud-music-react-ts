@@ -18,6 +18,9 @@ export const HomeTopWrapper = styled.div`
 
 export const HomeTabWrapper = styled.div`
   height: 44px;
+  position: relative;
+  z-index: 100;
+
   display: flex;
   flex-direction: row;
   justify-content: space-around;

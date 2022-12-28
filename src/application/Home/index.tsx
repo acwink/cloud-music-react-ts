@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { memo } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 
 import { HomeTabItemWrapper, HomeTabWrapper, HomeTopWrapper } from "./style";
 
-interface IHomeProps {
-  x?: string;
-}
+const Home = memo(() => {
+  const switchTabHandle = useCallback(({ isActive = false }) => {
+    if (isActive) return "selected";
+    return;
+  }, []);
 
-const Home = memo((props: IHomeProps) => {
   return (
     <div>
       <HomeTopWrapper>
@@ -18,17 +19,17 @@ const Home = memo((props: IHomeProps) => {
       </HomeTopWrapper>
 
       <HomeTabWrapper>
-        <NavLink to="/recommend" className="selected">
+        <NavLink to="/recommend" className={switchTabHandle}>
           <HomeTabItemWrapper>
             <span>推荐</span>
           </HomeTabItemWrapper>
         </NavLink>
-        <NavLink to="/recommend">
+        <NavLink to="/singers" className={switchTabHandle}>
           <HomeTabItemWrapper>
             <span>歌手</span>
           </HomeTabItemWrapper>
         </NavLink>
-        <NavLink to="/recommend">
+        <NavLink to="/rank" className={switchTabHandle}>
           <HomeTabItemWrapper>
             <span>排行榜</span>
           </HomeTabItemWrapper>

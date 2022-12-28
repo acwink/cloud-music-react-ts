@@ -18,12 +18,12 @@ module.exports = {
   },
   plugins: ["react", "@typescript-eslint"],
   rules: {
-    indent: ["error", 2],
     "linebreak-style": ["error", "windows"],
     quotes: ["error", "double"],
     semi: ["error", "always"],
     "@typescript-eslint/no-non-null-assertion": "off",
     "react/display-name": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "react/prop-types": "off",
   },
 };
