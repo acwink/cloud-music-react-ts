@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState, useEffect } from "react";
+import React, { memo, useCallback, useEffect, useContext } from "react";
 import LazyLoad, { forceCheck } from "react-lazyload";
 
 import Horizen from "@/baseUI/horizen";
@@ -24,6 +24,7 @@ import { IArtist } from "@/types/singers";
 import Loading from "@/baseUI/loading";
 
 import singerImg from "./singer.png";
+import { CategoryDataContext, actionTypes } from "./data";
 
 // 渲染函数，返回歌手列表
 const renderSingerList = (singerList: IArtist[]) => {
@@ -73,16 +74,20 @@ const Singers = memo((props: ISingersProps) => {
     pullDownRefreshDispatch,
   } = props;
 
-  const [category, setCategory] = useState<string>("");
-  const [alpha, setAlpha] = useState<string>("");
+  // 拿到上下文存储的数据
+  const { data, dispatch } = useContext(CategoryDataContext);
+  const category = data?.category ?? "";
+  const alpha = data?.alpha ?? "";
+  // const [category, setCategory] = useState<string>("");
+  // const [alpha, setAlpha] = useState<string>("");
 
   const handleUpdateAlpha = useCallback((val: string) => {
-    setAlpha(val);
+    dispatch && dispatch({ type: actionTypes.CHANGE_ALPHA, data: val });
     updateDispatch(category, val);
   }, []);
 
   const handleUpdateCategory = useCallback((val: string) => {
-    setCategory(val);
+    dispatch && dispatch({ type: actionTypes.CHANGE_CATEGORY, data: val });
     updateDispatch(val, alpha);
   }, []);
 
