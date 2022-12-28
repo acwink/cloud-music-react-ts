@@ -25,5 +25,6 @@ module.exports = {
     "react/display-name": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "react/prop-types": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
   },
 };

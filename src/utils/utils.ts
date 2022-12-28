@@ -1,4 +1,6 @@
+import rank from "@/store/modules/rank";
 import { FunctionType } from "@/types/shared";
+import { IRankItem } from "../types/rank";
 
 export const getCount = (count: number) => {
   if (count < 0) return;
@@ -29,4 +31,13 @@ export const debounce = (
       clearTimeout(timer);
     }, delay);
   };
+};
+
+export const filterIndex = (rankList: IRankItem[]) => {
+  for (let i = 0; i < rankList.length; ++i) {
+    if (rankList[i].tracks.length && !rankList[i + 1].tracks.length) {
+      return i + 1;
+    }
+  }
+  return rankList.length;
 };
