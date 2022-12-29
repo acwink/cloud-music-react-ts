@@ -55,3 +55,9 @@ export interface ApiAlbumDetail extends ApiRes {
   fromUserCount: number;
   songFromUsers: any;
 }
+
+export interface ApiSingerInfo extends ApiRes {
+  artist: any;
+  hotSongs: any;
+  more: boolean;
+}

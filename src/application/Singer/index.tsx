@@ -13,6 +13,9 @@ import Header from "@/baseUI/header";
 import Scroll from "@/baseUI/scroll";
 import SongList from "../SongList";
 import { HEADER_HIGHT } from "@/baseUI/header/index";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../store/index";
+import { fetchSingerInfoAction } from "../../store/modules/singer";
 interface ISingerProps {
   router?: RouterType;
 }
@@ -21,98 +24,12 @@ const Singer = memo((props: ISingerProps) => {
   const { router } = props;
   const [showStatus, setShowStatus] = useState(true);
 
-  const artist = {
-    picUrl:
-      "https://p2.music.126.net/W__FCWFiyq0JdPtuLJoZVQ==/109951163765026271.jpg",
-    name: "薛之谦",
-    hotSongs: [
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑",
-        },
-      },
-      // 省略 20 条
-    ],
-  };
+  const { artist, hotSongs } = useSelector((state: RootState) => {
+    return {
+      artist: state.singer.artist,
+      hotSongs: state.singer.songsOfArtist,
+    };
+  }, shallowEqual);
 
   const collectButton = useRef<any>();
   const imageWrapper = useRef<any>();
@@ -178,6 +95,12 @@ const Singer = memo((props: ISingerProps) => {
     }
   }, []);
 
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    if (router) dispatch(fetchSingerInfoAction(router.params.id!));
+  }, []);
+
   return (
     <CSSTransition
       in={showStatus}
@@ -205,7 +128,7 @@ const Singer = memo((props: ISingerProps) => {
           <Scroll onScroll={handleScroll} ref={songScroll}>
             <SongList
               showBackground
-              songs={artist.hotSongs}
+              songs={hotSongs}
               showCollect={false}
             ></SongList>
           </Scroll>

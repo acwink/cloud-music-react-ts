@@ -1,14 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
 import recommendReducer from "./modules/recommend";
-import singerReducer from "./modules/singers";
+import singersReducer from "./modules/singers";
 import rankReducer from "./modules/rank";
 import albumReducer from "./modules/album";
+
+import singerReducer from "./modules/singer";
 const store = configureStore({
   reducer: {
     recommend: recommendReducer,
-    singers: singerReducer,
+    singers: singersReducer,
     rank: rankReducer,
     album: albumReducer,
+    singer: singerReducer,
   },
 });
 
