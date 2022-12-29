@@ -42,3 +42,16 @@ export interface ApiRankList extends ApiRes {
     position: number;
   };
 }
+
+// 返回专辑数据
+export interface ApiAlbumDetail extends ApiRes {
+  relatedVideos: any;
+  playlist: any;
+  urls: string[];
+  privileges: any[];
+  sharedPrivilege: any;
+  resEntrance: any;
+  fromUsers: any;
+  fromUserCount: number;
+  songFromUsers: any;
+}

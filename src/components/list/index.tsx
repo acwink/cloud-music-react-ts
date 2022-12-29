@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useCallback } from "react";
 import LazyLoad from "react-lazyload";
 
 import { ListWrapper, List, ListItem } from "./style";
@@ -7,13 +7,23 @@ import { getCount } from "@/utils/utils";
 import type { IRecommendItem } from "@/types/recommend";
 
 import StandImg from "./music.png";
+import withRouter from "../../hoc/withRouter";
+import { RouterType } from "@/types/shared";
 
 interface IRecommentListProps {
   recommendList: IRecommendItem[];
+  router?: RouterType;
 }
 
 const RecommendList = memo((props: IRecommentListProps) => {
-  const { recommendList = [] } = props;
+  const { recommendList = [], router } = props;
+
+  // 跳转到歌单详情页面
+  const enterDetail = (id: number) => {
+    if (router) {
+      router.navigate(`/recommend/${id}`);
+    }
+  };
 
   return (
     <ListWrapper>
@@ -21,7 +31,7 @@ const RecommendList = memo((props: IRecommentListProps) => {
       <List>
         {recommendList.map((item, index) => {
           return (
-            <ListItem key={index}>
+            <ListItem key={index} onClick={() => enterDetail(item.id)}>
               <div className="img_wrapper">
                 <div className="decorate"></div>
                 {/* 此参数可以减少请求的图片资源 */}
@@ -56,4 +66,4 @@ const RecommendList = memo((props: IRecommentListProps) => {
   );
 });
 
-export default RecommendList;
+export default withRouter(RecommendList);

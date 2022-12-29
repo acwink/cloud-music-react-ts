@@ -41,3 +41,17 @@ export const filterIndex = (rankList: IRankItem[]) => {
   }
   return rankList.length;
 };
+
+// 处理歌手列表拼接歌手名字
+export const getName = (list: any[]) => {
+  let str = "";
+  list.map((item, index) => {
+    str += index === 0 ? item.name : "/" + item.name;
+    return item;
+  });
+  return str;
+};
+
+export const isEmptyObj = (obj: Record<PropertyKey, any>) => {
+  return Object.keys(obj).length === 0;
+};

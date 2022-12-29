@@ -10,6 +10,7 @@ import { RecommendWrapper } from "./style";
 
 import type { RootState, AppDispatch } from "@/store";
 import { fetchRecommendDataAction } from "@/store/modules/recommend";
+import { Outlet } from "react-router-dom";
 
 const Recommend = memo(() => {
   // 发送异步网络请求
@@ -36,6 +37,7 @@ const Recommend = memo(() => {
         </div>
       </Scroll>
       {enterLoading && <Loading />}
+      <Outlet />
     </RecommendWrapper>
   );
 });
