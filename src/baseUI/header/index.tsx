@@ -1,7 +1,7 @@
 import { FunctionType } from "@/types/shared";
 import React, { ForwardedRef, forwardRef, memo } from "react";
 import { HeaderContainer, MarqueeContainer } from "./style";
-
+export const HEADER_HIGHT = 45;
 interface IHeaderProps {
   handleClick?: FunctionType;
   title?: string;

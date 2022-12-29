@@ -17,8 +17,7 @@ import { AppDispatch } from "../../store/index";
 import { fetchAlbumDetailDataAction } from "../../store/modules/album";
 import { isEmptyObj } from "../../utils/utils";
 import Loading from "@/baseUI/loading";
-
-export const HEADER_HIGHT = 45;
+import { HEADER_HIGHT } from "@/baseUI/header/index";
 
 interface IAlbumProps {
   router?: RouterType;

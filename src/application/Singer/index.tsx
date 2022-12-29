@@ -12,7 +12,7 @@ import {
 import Header from "@/baseUI/header";
 import Scroll from "@/baseUI/scroll";
 import SongList from "../SongList";
-
+import { HEADER_HIGHT } from "@/baseUI/header/index";
 interface ISingerProps {
   router?: RouterType;
 }
@@ -26,6 +26,76 @@ const Singer = memo((props: ISingerProps) => {
       "https://p2.music.126.net/W__FCWFiyq0JdPtuLJoZVQ==/109951163765026271.jpg",
     name: "薛之谦",
     hotSongs: [
+      {
+        name: "我好像在哪见过你",
+        ar: [{ name: "薛之谦" }],
+        al: {
+          name: "薛之谦专辑",
+        },
+      },
+      {
+        name: "我好像在哪见过你",
+        ar: [{ name: "薛之谦" }],
+        al: {
+          name: "薛之谦专辑",
+        },
+      },
+      {
+        name: "我好像在哪见过你",
+        ar: [{ name: "薛之谦" }],
+        al: {
+          name: "薛之谦专辑",
+        },
+      },
+      {
+        name: "我好像在哪见过你",
+        ar: [{ name: "薛之谦" }],
+        al: {
+          name: "薛之谦专辑",
+        },
+      },
+      {
+        name: "我好像在哪见过你",
+        ar: [{ name: "薛之谦" }],
+        al: {
+          name: "薛之谦专辑",
+        },
+      },
+      {
+        name: "我好像在哪见过你",
+        ar: [{ name: "薛之谦" }],
+        al: {
+          name: "薛之谦专辑",
+        },
+      },
+      {
+        name: "我好像在哪见过你",
+        ar: [{ name: "薛之谦" }],
+        al: {
+          name: "薛之谦专辑",
+        },
+      },
+      {
+        name: "我好像在哪见过你",
+        ar: [{ name: "薛之谦" }],
+        al: {
+          name: "薛之谦专辑",
+        },
+      },
+      {
+        name: "我好像在哪见过你",
+        ar: [{ name: "薛之谦" }],
+        al: {
+          name: "薛之谦专辑",
+        },
+      },
+      {
+        name: "我好像在哪见过你",
+        ar: [{ name: "薛之谦" }],
+        al: {
+          name: "薛之谦专辑",
+        },
+      },
       {
         name: "我好像在哪见过你",
         ar: [{ name: "薛之谦" }],
@@ -69,6 +139,45 @@ const Singer = memo((props: ISingerProps) => {
     setShowStatus(false);
   }, []);
 
+  const handleScroll = useCallback((pos: any) => {
+    const height = initialHeight.current;
+    const newY = pos.y;
+    const imageDOM = imageWrapper.current;
+    const buttonDOM = collectButton.current;
+    const headerDOM = header.current;
+    const layerDOM = layer.current;
+
+    const minScrollY = -(height - OFFSET) + HEADER_HIGHT;
+
+    // 指的是滑动距离占图片的百分比
+    const percent = Math.abs(newY / height);
+    if (newY > 0) {
+      imageDOM.style["transform"] = `scale(${1 + percent})`;
+      buttonDOM.style["transform"] = `translate3d(0, ${newY}px, 0)`;
+      layerDOM.style.top = `${height - OFFSET + newY}px`;
+    } else if (newY >= minScrollY) {
+      layerDOM.style.top = `${height - OFFSET - Math.abs(newY)}px`;
+      // 这时候保证遮罩的层叠优先级比图片高，不至于被图片挡住
+      layerDOM.style.zIndex = 1;
+      imageDOM.style.paddingTop = "75%";
+      imageDOM.style.height = 0;
+      imageDOM.style.zIndex = -1;
+      // 按钮跟着移动且渐渐变透明
+      buttonDOM.style["transform"] = `translate3d(0, ${newY}px, 0)`;
+      buttonDOM.style["opacity"] = `${1 - percent * 2}`;
+    } else if (newY < minScrollY) {
+      // 往上滑动，但是超过 Header 部分
+      layerDOM.style.top = `${HEADER_HIGHT - OFFSET}px`;
+      layerDOM.style.zIndex = 1;
+      // 防止溢出的歌单内容遮住 Header
+      headerDOM.style.zIndex = 100;
+      // 此时图片高度与 Header 一致
+      imageDOM.style.height = `${HEADER_HIGHT}px`;
+      imageDOM.style.paddingTop = 0;
+      imageDOM.style.zIndex = 99;
+    }
+  }, []);
+
   return (
     <CSSTransition
       in={showStatus}
@@ -93,7 +202,7 @@ const Singer = memo((props: ISingerProps) => {
         </CollectButton>
         <BgLayer ref={layer}></BgLayer>
         <SongListWrapper ref={songScrollWrapper}>
-          <Scroll ref={songScroll}>
+          <Scroll onScroll={handleScroll} ref={songScroll}>
             <SongList
               showBackground
               songs={artist.hotSongs}
