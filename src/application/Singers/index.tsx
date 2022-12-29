@@ -19,44 +19,18 @@ import {
 import { connect } from "react-redux";
 import { AppDispatch } from "@/store";
 import { RootState } from "@/store/index";
-import { FunctionType, Flatten } from "@/types/shared";
+import { FunctionType, Flatten, RouterType } from "@/types/shared";
 import { IArtist } from "@/types/singers";
 import Loading from "@/baseUI/loading";
 
 import singerImg from "./singer.png";
 import { CategoryDataContext, actionTypes } from "./data";
-
-// 渲染函数，返回歌手列表
-const renderSingerList = (singerList: IArtist[]) => {
-  return (
-    <List>
-      {singerList.map((item, index) => {
-        return (
-          <ListItem key={item.accountId + "" + index}>
-            <div className="img_wrapper">
-              <LazyLoad
-                placeholder={
-                  <img width="100%" height="100%" src={singerImg} alt="music" />
-                }
-              >
-                <img
-                  src={`${item.picUrl}?param=300x300`}
-                  width="100%"
-                  height="100%"
-                  alt="music"
-                />
-              </LazyLoad>
-            </div>
-            <span className="name">{item.name}</span>
-          </ListItem>
-        );
-      })}
-    </List>
-  );
-};
+import { Outlet } from "react-router";
+import withRouter from "@/hoc/withRouter";
 
 export type ISingersProps = Flatten<
-  ReturnType<SingerMapDispatchToProps> & ReturnType<SingerMapStateToProps>
+  { router?: RouterType } & ReturnType<SingerMapDispatchToProps> &
+    ReturnType<SingerMapStateToProps>
 >;
 
 const Singers = memo((props: ISingersProps) => {
@@ -66,6 +40,7 @@ const Singers = memo((props: ISingersProps) => {
     pageCount,
     pullUpLoading,
     pullDownLoading,
+    router,
   } = props;
   const {
     getHotSingerDispatch,
@@ -80,6 +55,48 @@ const Singers = memo((props: ISingersProps) => {
   const alpha = data?.alpha ?? "";
   // const [category, setCategory] = useState<string>("");
   // const [alpha, setAlpha] = useState<string>("");
+
+  // UI
+  // 渲染函数，返回歌手列表
+  const renderSingerList = () => {
+    return (
+      <List>
+        {singerList.map((item, index) => {
+          return (
+            <ListItem
+              key={item.accountId + "" + index}
+              onClick={() => enterDetail(item.id)}
+            >
+              <div className="img_wrapper">
+                <LazyLoad
+                  placeholder={
+                    <img
+                      width="100%"
+                      height="100%"
+                      src={singerImg}
+                      alt="music"
+                    />
+                  }
+                >
+                  <img
+                    src={`${item.picUrl}?param=300x300`}
+                    width="100%"
+                    height="100%"
+                    alt="music"
+                  />
+                </LazyLoad>
+              </div>
+              <span className="name">{item.name}</span>
+            </ListItem>
+          );
+        })}
+      </List>
+    );
+  };
+
+  const enterDetail = (id: number) => {
+    router?.navigate(`/singers/${id}`);
+  };
 
   const handleUpdateAlpha = useCallback((val: string) => {
     dispatch && dispatch({ type: actionTypes.CHANGE_ALPHA, data: val });
@@ -108,6 +125,7 @@ const Singers = memo((props: ISingersProps) => {
 
   return (
     <div>
+      <Outlet />
       <NavContainer>
         <Horizen
           list={categoryTypes}
@@ -132,7 +150,7 @@ const Singers = memo((props: ISingersProps) => {
           pullDownLoading={pullDownLoading}
           pullUpLoading={pullUpLoading}
         >
-          {renderSingerList(singerList)}
+          {renderSingerList()}
         </Scroll>
       </ListContainer>
     </div>
@@ -206,4 +224,7 @@ const mapDispatchToProps: SingerMapDispatchToProps = (
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Singers);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(Singers));

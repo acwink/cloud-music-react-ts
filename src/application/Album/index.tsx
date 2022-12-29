@@ -1,14 +1,15 @@
 import React, { memo, useState, useRef, useEffect, useCallback } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { CSSTransition } from "react-transition-group";
 
 import { Container } from "./style";
-import { CSSTransition } from "react-transition-group";
 import { RouterType } from "@/types/shared";
 import withRouter from "@/hoc/withRouter";
 import Header from "@/baseUI/header";
 import Scroll from "@/baseUI/scroll";
-import { getCount, getName } from "@/utils/utils";
-import { TopDesc, Menu, SongList, SongItem } from "./style";
+import SongList from "../SongList";
+import { getCount } from "@/utils/utils";
+import { TopDesc, Menu } from "./style";
 import theme from "@/assets/theme/global-style";
 
 import { RootState } from "@/store/index";
@@ -71,37 +72,12 @@ const Album = memo((props: IAlbumProps) => {
   };
   const renderSongList = () => {
     return (
-      <SongList showBackground={true}>
-        <div className="first_line">
-          <div className="play_all">
-            <i className="iconfont">&#xe6e3;</i>
-            <span>
-              {" "}
-              播放全部{" "}
-              <span className="sum">(共 {currentAlbum.tracks.length} 首)</span>
-            </span>
-          </div>
-          <div className="add_list">
-            <i className="iconfont">&#xe62d;</i>
-            <span> 收藏 ({getCount(currentAlbum.subscribedCount)})</span>
-          </div>
-        </div>
-        <SongItem>
-          {currentAlbum.tracks.map((item: any, index: number) => {
-            return (
-              <li key={index}>
-                <span className="index">{index + 1}</span>
-                <div className="info">
-                  <span>{item.name}</span>
-                  <span>
-                    {getName(item.ar)} - {item.al.name}
-                  </span>
-                </div>
-              </li>
-            );
-          })}
-        </SongItem>
-      </SongList>
+      <SongList
+        songs={currentAlbum.tracks}
+        collectCount={currentAlbum.subscribedCount}
+        showCollect={true}
+        showBackground={true}
+      />
     );
   };
   const renderMenu = () => {
