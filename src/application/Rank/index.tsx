@@ -9,8 +9,15 @@ import { IRankItem } from "../../types/rank";
 import { Container, List, ListItem, SongList } from "./style";
 import Scroll from "@/baseUI/scroll";
 import Loading from "@/baseUI/loading";
+import { Outlet } from "react-router";
+import withRouter from "@/hoc/withRouter";
+import { RouterType } from "@/types/shared";
 
-const Rank = memo(() => {
+interface IRankProps {
+  router?: RouterType;
+}
+const Rank = memo((props: IRankProps) => {
+  const { router } = props;
   const { rankList, loading } = useSelector((state: RootState) => {
     return {
       rankList: state.rank.rankList,
@@ -23,8 +30,8 @@ const Rank = memo(() => {
   const officialList = rankList.slice(0, globalStartIndex);
   const globalList = rankList.slice(globalStartIndex);
 
-  const enterDetail = (name: string) => {
-    console.log(name);
+  const enterDetail = (detail: any) => {
+    router?.navigate(`/rank/${detail.id}`);
   };
   // UI
   const renderRankList = (list: IRankItem[], global = false) => {
@@ -35,7 +42,7 @@ const Rank = memo(() => {
             <ListItem
               key={item.coverImgId + `${index}`}
               tracks={item.tracks}
-              onClick={() => enterDetail(item.name)}
+              onClick={() => enterDetail(item)}
             >
               <div className="img_wrapper">
                 <img src={item.coverImgUrl} alt="" />
@@ -73,6 +80,8 @@ const Rank = memo(() => {
 
   return (
     <Container>
+      <Outlet />
+
       <Scroll>
         {/* @ts-expect-error  */}
         <div>
@@ -93,4 +102,4 @@ const Rank = memo(() => {
   );
 });
 
-export default Rank;
+export default withRouter(Rank);

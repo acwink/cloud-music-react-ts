@@ -20,7 +20,7 @@ import Loading from "@/baseUI/loading";
 export const HEADER_HIGHT = 45;
 
 interface IAlbumProps {
-  router: RouterType;
+  router?: RouterType;
 }
 
 const Album = memo((props: IAlbumProps) => {
@@ -154,7 +154,7 @@ const Album = memo((props: IAlbumProps) => {
   );
 
   useEffect(() => {
-    dispatch(fetchAlbumDetailDataAction(Number(router.params.id)));
+    dispatch(fetchAlbumDetailDataAction(Number(router!.params.id)));
   }, []);
 
   return (
@@ -163,7 +163,7 @@ const Album = memo((props: IAlbumProps) => {
       timeout={300}
       classNames="fly"
       appear
-      onExited={() => router.navigate(-1)}
+      onExited={() => router!.navigate(-1)}
     >
       <Container>
         <Header
