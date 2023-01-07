@@ -1,6 +1,9 @@
 import React, { ForwardedRef, MouseEvent } from "react";
 import { SongItem, SongList } from "./style";
 import { getName } from "@/utils/utils";
+import { findIndex } from "../../utils/utils";
+import usePlayList from "../Player/hooks/usePlayList";
+import useCurrent from "../Player/hooks/useCurrent";
 
 interface ISongListProps {
   collectCount?: number;
@@ -14,8 +17,23 @@ const SongsList = React.forwardRef(
 
     const totalCount = songs.length;
 
+    const { playList, changePlayList } = usePlayList();
+    const { changeCurrentIndex } = useCurrent();
+
     const selectItem = (e: MouseEvent, index: number) => {
-      console.log(index);
+      const idx = findIndex(songs[index], playList);
+      if (idx !== -1) {
+        changeCurrentIndex(idx);
+      } else {
+        const newList = [...playList, songs[index]];
+        changePlayList(newList);
+        changeCurrentIndex(newList.length - 1);
+      }
+    };
+
+    const selectItemAll = () => {
+      changePlayList(songs);
+      changeCurrentIndex(0);
     };
 
     const songList = (list: any) => {
@@ -49,7 +67,7 @@ const SongsList = React.forwardRef(
     return (
       <SongList ref={refs} showBackground={props.showBackground}>
         <div className="first_line">
-          <div className="play_all" onClick={(e) => selectItem(e, 0)}>
+          <div className="play_all" onClick={() => selectItemAll()}>
             <i className="iconfont">&#xe6e3;</i>
             <span>
               {" "}

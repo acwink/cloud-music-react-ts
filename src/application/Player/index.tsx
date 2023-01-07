@@ -53,6 +53,17 @@ const Player = memo(() => {
     return context;
   }, [mode]);
 
+  // 通过ref解决闭包陷阱
+  const playListRef = useRef(playList);
+  const currentIndexRef = useRef(currentIndex);
+  const currentSongRef = useRef(currentSong);
+  const playingRef = useRef(playing);
+
+  playListRef.current = playList;
+  currentIndexRef.current = currentIndex;
+  currentSongRef.current = currentSong;
+  playingRef.current = playing;
+
   // 更新进度条
   const updateTime = useCallback((e: any) => {
     setCurrentTime(e.target.currentTime);
@@ -78,26 +89,26 @@ const Player = memo(() => {
   // 上一首歌曲
   const handlePre = useCallback(() => {
     // 播放列表只有一首歌循环播放
-    if (playList.length === 1) {
+    if (playListRef.current.length === 1) {
       handleLoop();
       return;
     }
-    let index = currentIndex - 1;
-    if (index < 0) index = playList.length - 1;
-    if (!playing) togglePlaying(true);
+    let index = currentIndexRef.current - 1;
+    if (index < 0) index = playListRef.current.length - 1;
+    if (!playingRef.current) togglePlaying(true);
     changeCurrentIndex(index);
   }, []);
 
   // 下一首歌曲
   const handleNext = useCallback(() => {
     // 歌单只有一首歌曲，循环
-    if (playList.length === 1) {
+    if (playListRef.current.length === 1) {
       handleLoop();
       return;
     }
-    let index = currentIndex + 1;
-    if (index === playList.length) index = 0;
-    if (!playing) togglePlaying(true);
+    let index = currentIndexRef.current + 1;
+    if (index === playListRef.current.length) index = 0;
+    if (!playingRef.current) togglePlaying(true);
     changeCurrentIndex(index);
   }, []);
 
@@ -109,12 +120,10 @@ const Player = memo(() => {
       handleNext();
     }
   }, []);
-
   // 先mock一份currentIndex
   useEffect(() => {
     changeCurrentIndex(0);
   }, []);
-
   useEffect(() => {
     if (
       !playList.length ||
@@ -136,10 +145,6 @@ const Player = memo(() => {
     setCurrentTime(0);
     setDuration((current.dt / 1000) | 0);
   }, [playList, currentIndex]);
-
-  useEffect(() => {
-    toastRef.current?.show();
-  }, []);
 
   // 暂停逻辑
   useEffect(() => {

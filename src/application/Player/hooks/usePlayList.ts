@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { RootState, AppDispatch } from "../../../store/index";
 import { changePalyingAction } from "@/store/modules/player";
 
@@ -7,7 +7,7 @@ function usePlayList() {
     return {
       playList: state.player.playList,
     };
-  });
+  }, shallowEqual);
 
   const dispatch = useDispatch<AppDispatch>();
   const changePlayList = (data: any) => {
