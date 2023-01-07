@@ -2,8 +2,12 @@ import React, { ForwardedRef, MouseEvent } from "react";
 import { SongItem, SongList } from "./style";
 import { getName } from "@/utils/utils";
 import { findIndex } from "../../utils/utils";
-import usePlayList from "../Player/hooks/usePlayList";
-import useCurrent from "../Player/hooks/useCurrent";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../store/index";
+import {
+  changeCurrentIndexAction,
+  changePlayListAction,
+} from "@/store/modules/player";
 
 interface ISongListProps {
   collectCount?: number;
@@ -17,23 +21,28 @@ const SongsList = React.forwardRef(
 
     const totalCount = songs.length;
 
-    const { playList, changePlayList } = usePlayList();
-    const { changeCurrentIndex } = useCurrent();
+    const dispatch = useDispatch<AppDispatch>();
+    const { playList } = useSelector((state: RootState) => {
+      return {
+        currentIndex: state.player.currentIndex,
+        playList: state.player.playList,
+      };
+    }, shallowEqual);
 
     const selectItem = (e: MouseEvent, index: number) => {
       const idx = findIndex(songs[index], playList);
       if (idx !== -1) {
-        changeCurrentIndex(idx);
+        dispatch(changeCurrentIndexAction(idx));
       } else {
         const newList = [...playList, songs[index]];
-        changePlayList(newList);
-        changeCurrentIndex(newList.length - 1);
+        dispatch(changeCurrentIndexAction(newList.length - 1));
+        dispatch(changePlayListAction(newList));
       }
     };
 
     const selectItemAll = () => {
-      changePlayList(songs);
-      changeCurrentIndex(0);
+      dispatch(changePlayListAction(songs));
+      dispatch(changeCurrentIndexAction(0));
     };
 
     const songList = (list: any) => {
