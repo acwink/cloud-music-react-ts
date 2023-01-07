@@ -1,4 +1,3 @@
-import rank from "@/store/modules/rank";
 import { FunctionType } from "@/types/shared";
 import { IRankItem } from "../types/rank";
 
@@ -54,4 +53,21 @@ export const getName = (list: any[]) => {
 
 export const isEmptyObj = (obj: Record<PropertyKey, any>) => {
   return Object.keys(obj).length === 0;
+};
+
+//拼接出歌曲的url链接
+export const getSongUrl = (id: number | string) => {
+  return `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
+};
+
+export const isEmptyObject = (obj: Record<PropertyKey, any>) => {
+  return Reflect.ownKeys(obj).length === 0;
+};
+
+// 格式化时间
+export const formatPlayTime = (interval: number) => {
+  interval = interval | 0; // 向下取整
+  const minute = (interval / 60) | 0;
+  const second = (interval % 60).toString().padStart(2, "0");
+  return `${minute}:${second}`;
 };
