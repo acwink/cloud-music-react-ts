@@ -6,6 +6,7 @@ import usePlaying from "./hooks/usePlaying";
 import useFullScreen from "./hooks/useFullScreen";
 
 import { getSongUrl, isEmptyObject } from "@/utils/utils";
+import { useMemo } from "react";
 
 const Player = memo(() => {
   // const currentSong = {
@@ -21,6 +22,9 @@ const Player = memo(() => {
   // 歌曲总时长
   const [duration, setDuration] = useState(0);
 
+  // 记录当前的歌曲，以便下次重新渲染时比对是否是同一首歌曲
+  const [preSong, setPreSong] = useState<Record<PropertyKey, any>>({});
+
   // 歌曲播放进度
   const percent = Number.isNaN(currentTime / duration)
     ? 0
@@ -32,80 +36,82 @@ const Player = memo(() => {
   const { playing, togglePlaying } = usePlaying();
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const playList = [
-    {
-      ftype: 0,
-      djId: 0,
-      a: null,
-      cd: "01",
-      crbt: null,
-      no: 1,
-      st: 0,
-      rt: "",
-      cf: "",
-      alia: ["手游《梦幻花园》苏州园林版推广曲"],
-      rtUrls: [],
-      fee: 0,
-      s_id: 0,
-      copyright: 0,
-      h: {
-        br: 320000,
-        fid: 0,
-        size: 9400365,
-        vd: -45814,
-      },
-      mv: 0,
-      al: {
-        id: 84991301,
+  const playList = useMemo(() => {
+    return [
+      {
+        ftype: 0,
+        djId: 0,
+        a: null,
+        cd: "01",
+        crbt: null,
+        no: 1,
+        st: 0,
+        rt: "",
+        cf: "",
+        alia: ["手游《梦幻花园》苏州园林版推广曲"],
+        rtUrls: [],
+        fee: 0,
+        s_id: 0,
+        copyright: 0,
+        h: {
+          br: 320000,
+          fid: 0,
+          size: 9400365,
+          vd: -45814,
+        },
+        mv: 0,
+        al: {
+          id: 84991301,
+          name: "拾梦纪",
+          picUrl:
+            "http://p1.music.126.net/M19SOoRMkcHmJvmGflXjXQ==/109951164627180052.jpg",
+          tns: [],
+          pic_str: "109951164627180052",
+          pic: 109951164627180050,
+        },
         name: "拾梦纪",
-        picUrl:
-          "http://p1.music.126.net/M19SOoRMkcHmJvmGflXjXQ==/109951164627180052.jpg",
-        tns: [],
-        pic_str: "109951164627180052",
-        pic: 109951164627180050,
-      },
-      name: "拾梦纪",
-      l: {
-        br: 128000,
-        fid: 0,
-        size: 3760173,
-        vd: -41672,
-      },
-      rtype: 0,
-      m: {
-        br: 192000,
-        fid: 0,
-        size: 5640237,
-        vd: -43277,
-      },
-      cp: 1416668,
-      mark: 0,
-      rtUrl: null,
-      mst: 9,
-      dt: 234947,
-      ar: [
-        {
-          id: 12084589,
-          name: "妖扬",
-          tns: [],
-          alias: [],
+        l: {
+          br: 128000,
+          fid: 0,
+          size: 3760173,
+          vd: -41672,
         },
-        {
-          id: 12578371,
-          name: "金天",
-          tns: [],
-          alias: [],
+        rtype: 0,
+        m: {
+          br: 192000,
+          fid: 0,
+          size: 5640237,
+          vd: -43277,
         },
-      ],
-      pop: 5,
-      pst: 0,
-      t: 0,
-      v: 3,
-      id: 1416767593,
-      publishTime: 0,
-      rurl: null,
-    },
-  ];
+        cp: 1416668,
+        mark: 0,
+        rtUrl: null,
+        mst: 9,
+        dt: 234947,
+        ar: [
+          {
+            id: 12084589,
+            name: "妖扬",
+            tns: [],
+            alias: [],
+          },
+          {
+            id: 12578371,
+            name: "金天",
+            tns: [],
+            alias: [],
+          },
+        ],
+        pop: 5,
+        pst: 0,
+        t: 0,
+        v: 3,
+        id: 1416767593,
+        publishTime: 0,
+        rurl: null,
+      },
+    ];
+  }, []);
 
   // 更新进度条
   const updateTime = (e: any) => {
@@ -155,23 +161,31 @@ const Player = memo(() => {
     changeCurrentIndex(index);
   };
 
+  // 先mock一份currentIndex
   useEffect(() => {
-    if (!currentSong) return;
     changeCurrentIndex(0);
-    const current = playList[0];
-    changeCurrentSong(current);
-    audioRef.current!.src = getSongUrl(current.id);
-    setTimeout(() => {
-      audioRef.current!.play();
-    });
-    // togglePlaying(true); // 播放状态
-    setCurrentTime(0); // 从头开始播放
-    setDuration((current.dt / 1000) | 0); // 时长
   }, []);
 
   useEffect(() => {
-    playing ? audioRef.current!.play() : audioRef.current!.pause();
-  }, [playing]);
+    if (
+      !playList.length ||
+      currentIndex === -1 ||
+      !playList[currentIndex] ||
+      playList[currentIndex].id === preSong.id
+    ) {
+      return;
+    }
+    const current = playList[currentIndex];
+    changeCurrentSong(current);
+    setPreSong(current);
+    audioRef.current!.src = getSongUrl(current.id);
+    setTimeout(() => {
+      audioRef.current?.play();
+    });
+    togglePlaying(true);
+    setCurrentTime(0);
+    setDuration((current.dt / 1000) | 0);
+  }, [playList, currentIndex]);
 
   return (
     <div>
