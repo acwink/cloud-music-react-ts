@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import { CSSTransition } from "react-transition-group";
 import animations from "create-keyframe-animation";
 
@@ -18,6 +18,8 @@ import usePlaying from "../hooks/usePlaying";
 import classNames from "classnames";
 import { FunctionType } from "@/types/shared";
 import { formatPlayTime } from "../../../utils/utils";
+import useMode from "../hooks/useMode";
+import { playMode } from "@/store/modules/player";
 
 interface INormalPlayerProps {
   song: any;
@@ -32,11 +34,25 @@ interface INormalPlayerProps {
 function NormalPlayer(props: INormalPlayerProps) {
   const { song, percent, currentTime, duration } = props;
   const { onProgressChange, handleNext, handlePrev } = props;
+
   const { fullScreen, toggleFullScreen } = useFullScreen();
   const { playing, togglePlaying } = usePlaying();
+  const { mode, changeMode } = useMode();
 
   const normalPlayerRef = useRef<HTMLDivElement>(null);
   const cdWrapperRef = useRef<HTMLDivElement>(null);
+
+  const modeIcon = useMemo(() => {
+    let content = "";
+    if (mode === playMode.sequence) {
+      content = "&#xe625;";
+    } else if (mode === playMode.loop) {
+      content = "&#xe653;";
+    } else {
+      content = "&#xe61b;";
+    }
+    return content;
+  }, [mode]);
 
   // 计算偏移的辅助函数
   const _getPosAndScale = () => {
@@ -159,8 +175,11 @@ function NormalPlayer(props: INormalPlayerProps) {
             <div className="time time-r">{formatPlayTime(duration)}</div>
           </ProgressWrapper>
           <Operators>
-            <div className="icon i-left">
-              <i className="iconfont">&#xe625;</i>
+            <div className="icon i-left" onClick={changeMode}>
+              <i
+                className="iconfont"
+                dangerouslySetInnerHTML={{ __html: modeIcon }}
+              ></i>
             </div>
             <div className="icon i-left" onClick={handlePrev}>
               <i className="iconfont">&#xe6e1;</i>

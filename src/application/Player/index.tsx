@@ -1,22 +1,24 @@
-import React, { memo, useState, useRef, useEffect } from "react";
+import React, {
+  memo,
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import MiniPlayer from "./miniPlayer";
 import NormalPalyer from "./normalPalyer";
 import useCurrent from "./hooks/useCurrent";
 import usePlaying from "./hooks/usePlaying";
-import useFullScreen from "./hooks/useFullScreen";
 
 import { getSongUrl, isEmptyObject } from "@/utils/utils";
-import { useMemo } from "react";
+import usePlayList from "./hooks/usePlayList";
+import Toast from "@/baseUI/toast";
+import { FunctionType } from "../../types/shared";
+import useMode from "./hooks/useMode";
+import { playMode } from "@/store/modules/player";
 
 const Player = memo(() => {
-  // const currentSong = {
-  //   al: {
-  //     picUrl:
-  //       "https://p1.music.126.net/JL_id1CFwNJpzgrXwemh4Q==/109951164172892390.jpg",
-  //   },
-  //   name: "木偶人",
-  //   ar: [{ name: "薛之谦" }],
-  // };
   // 目前播放时间
   const [currentTime, setCurrentTime] = useState(0);
   // 歌曲总时长
@@ -24,6 +26,9 @@ const Player = memo(() => {
 
   // 记录当前的歌曲，以便下次重新渲染时比对是否是同一首歌曲
   const [preSong, setPreSong] = useState<Record<PropertyKey, any>>({});
+
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const toastRef = useRef<{ show: FunctionType }>(null);
 
   // 歌曲播放进度
   const percent = Number.isNaN(currentTime / duration)
@@ -34,99 +39,34 @@ const Player = memo(() => {
   const { currentIndex, currentSong, changeCurrentSong, changeCurrentIndex } =
     useCurrent();
   const { playing, togglePlaying } = usePlaying();
-  const audioRef = useRef<HTMLAudioElement>(null);
-
-  const playList = useMemo(() => {
-    return [
-      {
-        ftype: 0,
-        djId: 0,
-        a: null,
-        cd: "01",
-        crbt: null,
-        no: 1,
-        st: 0,
-        rt: "",
-        cf: "",
-        alia: ["手游《梦幻花园》苏州园林版推广曲"],
-        rtUrls: [],
-        fee: 0,
-        s_id: 0,
-        copyright: 0,
-        h: {
-          br: 320000,
-          fid: 0,
-          size: 9400365,
-          vd: -45814,
-        },
-        mv: 0,
-        al: {
-          id: 84991301,
-          name: "拾梦纪",
-          picUrl:
-            "http://p1.music.126.net/M19SOoRMkcHmJvmGflXjXQ==/109951164627180052.jpg",
-          tns: [],
-          pic_str: "109951164627180052",
-          pic: 109951164627180050,
-        },
-        name: "拾梦纪",
-        l: {
-          br: 128000,
-          fid: 0,
-          size: 3760173,
-          vd: -41672,
-        },
-        rtype: 0,
-        m: {
-          br: 192000,
-          fid: 0,
-          size: 5640237,
-          vd: -43277,
-        },
-        cp: 1416668,
-        mark: 0,
-        rtUrl: null,
-        mst: 9,
-        dt: 234947,
-        ar: [
-          {
-            id: 12084589,
-            name: "妖扬",
-            tns: [],
-            alias: [],
-          },
-          {
-            id: 12578371,
-            name: "金天",
-            tns: [],
-            alias: [],
-          },
-        ],
-        pop: 5,
-        pst: 0,
-        t: 0,
-        v: 3,
-        id: 1416767593,
-        publishTime: 0,
-        rurl: null,
-      },
-    ];
-  }, []);
+  const { playList } = usePlayList();
+  const { mode } = useMode();
+  const modeText = useMemo(() => {
+    let context = "";
+    if (mode === playMode.sequence) {
+      context = "顺序播放";
+    } else if (mode === playMode.loop) {
+      context = "循环播放";
+    } else {
+      context = "随机播放";
+    }
+    return context;
+  }, [mode]);
 
   // 更新进度条
-  const updateTime = (e: any) => {
+  const updateTime = useCallback((e: any) => {
     setCurrentTime(e.target.currentTime);
-  };
+  }, []);
 
   // 进度条改变修改 percent 的回调函数
-  const onProgressChange = (curPercent: number) => {
+  const onProgressChange = useCallback((curPercent: number) => {
     const newTime = curPercent * duration;
     setCurrentTime(newTime);
     audioRef.current!.currentTime = newTime;
     if (!playing) {
       togglePlaying(true);
     }
-  };
+  }, []);
 
   // 一首歌曲循环
   const handleLoop = () => {
@@ -136,7 +76,7 @@ const Player = memo(() => {
   };
 
   // 上一首歌曲
-  const handlePre = () => {
+  const handlePre = useCallback(() => {
     // 播放列表只有一首歌循环播放
     if (playList.length === 1) {
       handleLoop();
@@ -146,10 +86,10 @@ const Player = memo(() => {
     if (index < 0) index = playList.length - 1;
     if (!playing) togglePlaying(true);
     changeCurrentIndex(index);
-  };
+  }, []);
 
   // 下一首歌曲
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     // 歌单只有一首歌曲，循环
     if (playList.length === 1) {
       handleLoop();
@@ -159,7 +99,16 @@ const Player = memo(() => {
     if (index === playList.length) index = 0;
     if (!playing) togglePlaying(true);
     changeCurrentIndex(index);
-  };
+  }, []);
+
+  // 歌曲播放完毕后的处理逻辑
+  const handleEnd = useCallback(() => {
+    if (mode === playMode.loop) {
+      handleLoop();
+    } else {
+      handleNext();
+    }
+  }, []);
 
   // 先mock一份currentIndex
   useEffect(() => {
@@ -183,9 +132,24 @@ const Player = memo(() => {
       audioRef.current?.play();
     });
     togglePlaying(true);
+
     setCurrentTime(0);
     setDuration((current.dt / 1000) | 0);
   }, [playList, currentIndex]);
+
+  useEffect(() => {
+    toastRef.current?.show();
+  }, []);
+
+  // 暂停逻辑
+  useEffect(() => {
+    playing ? audioRef.current?.play() : audioRef.current?.pause();
+  }, [playing]);
+
+  // 监听mode发生变化，显示弹窗
+  useEffect(() => {
+    toastRef.current?.show();
+  }, [mode]);
 
   return (
     <div>
@@ -203,7 +167,12 @@ const Player = memo(() => {
       {!isEmptyObject(currentSong) && (
         <MiniPlayer song={currentSong} percent={percent}></MiniPlayer>
       )}
-      <audio ref={audioRef} onTimeUpdate={updateTime}></audio>
+      <audio
+        ref={audioRef}
+        onTimeUpdate={updateTime}
+        onEnded={handleEnd}
+      ></audio>
+      <Toast ref={toastRef} text={modeText} />
     </div>
   );
 });
