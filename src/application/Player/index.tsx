@@ -139,9 +139,14 @@ const Player = memo(() => {
     setPreSong(current);
     audioRef.current!.src = getSongUrl(current.id);
     setTimeout(() => {
-      audioRef.current?.play().then(() => {
-        songReady.current = true;
-      });
+      audioRef.current
+        ?.play()
+        .then(() => {
+          songReady.current = true;
+        })
+        .catch(() => {
+          songReady.current = true;
+        });
     });
     togglePlaying(true);
 
