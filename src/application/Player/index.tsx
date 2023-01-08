@@ -120,10 +120,7 @@ const Player = memo(() => {
       handleNext();
     }
   }, []);
-  // 先mock一份currentIndex
-  useEffect(() => {
-    changeCurrentIndex(0);
-  }, []);
+
   useEffect(() => {
     if (
       !playList.length ||

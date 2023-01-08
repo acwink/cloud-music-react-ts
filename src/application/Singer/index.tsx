@@ -16,6 +16,8 @@ import { HEADER_HIGHT } from "@/baseUI/header/index";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/index";
 import { fetchSingerInfoAction } from "../../store/modules/singer";
+import MusicNode from "@/baseUI/music-note";
+import { FunctionType } from "../../types/shared";
 interface ISingerProps {
   router?: RouterType;
 }
@@ -37,6 +39,8 @@ const Singer = memo((props: ISingerProps) => {
   const songScroll = useRef<any>();
   const header = useRef<any>();
   const layer = useRef<any>();
+  const musicNoteRef = useRef<{ startAnimation: FunctionType }>();
+
   // 图片初始高度
   const initialHeight = useRef(0);
 
@@ -101,6 +105,12 @@ const Singer = memo((props: ISingerProps) => {
     if (router) dispatch(fetchSingerInfoAction(router.params.id!));
   }, []);
 
+  const musicAnimation = useCallback(
+    (x: number, y: number) => {
+      if (musicNoteRef.current) musicNoteRef.current.startAnimation({ x, y });
+    },
+    [musicNoteRef]
+  );
   return (
     <CSSTransition
       in={showStatus}
@@ -130,9 +140,11 @@ const Singer = memo((props: ISingerProps) => {
               showBackground
               songs={hotSongs}
               showCollect={false}
+              musicAnimation={musicAnimation}
             ></SongList>
           </Scroll>
         </SongListWrapper>
+        <MusicNode ref={musicNoteRef} />
       </Container>
     </CSSTransition>
   );

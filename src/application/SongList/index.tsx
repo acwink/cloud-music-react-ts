@@ -4,6 +4,7 @@ import { getName } from "@/utils/utils";
 import { findIndex } from "../../utils/utils";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/index";
+import { FunctionType } from "../../types/shared";
 import {
   changeCurrentIndexAction,
   changePlayListAction,
@@ -14,10 +15,12 @@ interface ISongListProps {
   showCollect?: boolean;
   songs: any[];
   showBackground: boolean;
+  musicAnimation?: FunctionType;
 }
 const SongsList = React.forwardRef(
   (props: ISongListProps, refs: ForwardedRef<HTMLDivElement>) => {
     const { collectCount = 0, showCollect = false, songs } = props;
+    const { musicAnimation } = props;
 
     const totalCount = songs.length;
 
@@ -38,6 +41,8 @@ const SongsList = React.forwardRef(
         dispatch(changeCurrentIndexAction(newList.length - 1));
         dispatch(changePlayListAction(newList));
       }
+      if (musicAnimation)
+        musicAnimation(e.nativeEvent.clientX, e.nativeEvent.clientY);
     };
 
     const selectItemAll = () => {
