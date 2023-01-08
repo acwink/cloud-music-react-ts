@@ -8,6 +8,7 @@ import { FunctionType } from "../../types/shared";
 import {
   changeCurrentIndexAction,
   changePlayListAction,
+  changeSequencePlayListAction,
 } from "@/store/modules/player";
 
 interface ISongListProps {
@@ -46,6 +47,7 @@ const SongsList = React.forwardRef(
     };
 
     const selectItemAll = () => {
+      dispatch(changeSequencePlayListAction(songs));
       dispatch(changePlayListAction(songs));
       dispatch(changeCurrentIndexAction(0));
     };
