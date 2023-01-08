@@ -120,7 +120,7 @@ const Singer = memo((props: ISingerProps) => {
       unmountOnExit
       onExited={() => router?.navigate(-1)}
     >
-      <Container play={0}>
+      <Container play={1}>
         <Header
           ref={header}
           title={"头部"}

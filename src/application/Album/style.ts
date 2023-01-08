@@ -1,11 +1,11 @@
 import styled from "styled-components";
 
-export const Container = styled.div`
+export const Container = styled.div<{ play: number }>`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: ${(props) => (props.play > 0 ? "60px" : 0)};
   z-index: 100;
   background-color: ${(props) => props.theme["background-color"]};
   transform-origin: right bottom;

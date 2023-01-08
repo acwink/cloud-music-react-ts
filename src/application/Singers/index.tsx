@@ -140,7 +140,7 @@ const Singers = memo((props: ISingersProps) => {
           oldVal={alpha}
         ></Horizen>
       </NavContainer>
-      <ListContainer>
+      <ListContainer play={1}>
         {enterLoading && <Loading />}
 
         <Scroll

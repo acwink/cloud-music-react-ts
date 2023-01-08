@@ -29,7 +29,7 @@ const Recommend = memo(() => {
   }, [dispatch]);
 
   return (
-    <RecommendWrapper>
+    <RecommendWrapper play={1}>
       <Scroll onScroll={forceCheck}>
         <div>
           <Slider bannerList={bannerList}></Slider>

@@ -2,10 +2,10 @@ import styled from "styled-components";
 
 // Props 中的 globalRank 和 tracks.length 均代表是否为全球榜
 
-export const Container = styled.div`
+export const Container = styled.div<{ play: number }>`
   position: fixed;
   top: 90px;
-  bottom: 0;
+  bottom: ${(props) => (props.play > 0 ? "60px" : 0)};
   width: 100%;
   .offical,
   .global {

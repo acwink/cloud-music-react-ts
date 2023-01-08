@@ -79,7 +79,7 @@ const Rank = memo((props: IRankProps) => {
   }, []);
 
   return (
-    <Container>
+    <Container play={1}>
       <Outlet />
 
       <Scroll>

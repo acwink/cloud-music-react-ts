@@ -9,11 +9,11 @@ export const NavContainer = styled.div`
   overflow: hidden;
 `;
 
-export const ListContainer = styled.div`
+export const ListContainer = styled.div<{ play: number }>`
   position: fixed;
   top: 160px;
   left: 0;
-  bottom: 0;
+  bottom: ${(props) => (props.play > 0 ? "60px" : 0)};
   overflow: hidden;
   width: 100%;
 `;

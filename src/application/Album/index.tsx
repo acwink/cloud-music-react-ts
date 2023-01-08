@@ -18,6 +18,8 @@ import { fetchAlbumDetailDataAction } from "../../store/modules/album";
 import { isEmptyObj } from "../../utils/utils";
 import Loading from "@/baseUI/loading";
 import { HEADER_HIGHT } from "@/baseUI/header/index";
+import { FunctionType } from "../../types/shared";
+import MusicNote from "@/baseUI/music-note";
 
 interface IAlbumProps {
   router?: RouterType;
@@ -30,6 +32,7 @@ const Album = memo((props: IAlbumProps) => {
   const [isMarquee, setIsMarquee] = useState(false);
 
   const headerEl = useRef<HTMLDivElement>(null);
+  const iconsRef = useRef<{ startAnimation: FunctionType }>();
 
   const dispatch = useDispatch<AppDispatch>();
   const { currentAlbum, enterLoading } = useSelector((state: RootState) => {
@@ -76,6 +79,7 @@ const Album = memo((props: IAlbumProps) => {
         collectCount={currentAlbum.subscribedCount}
         showCollect={true}
         showBackground={true}
+        musicAnimation={musicAnimation}
       />
     );
   };
@@ -128,6 +132,13 @@ const Album = memo((props: IAlbumProps) => {
     [currentAlbum]
   );
 
+  const musicAnimation = useCallback(
+    (x: number, y: number) => {
+      iconsRef.current?.startAnimation({ x, y });
+    },
+    [iconsRef]
+  );
+
   useEffect(() => {
     dispatch(fetchAlbumDetailDataAction(Number(router!.params.id)));
   }, []);
@@ -140,7 +151,7 @@ const Album = memo((props: IAlbumProps) => {
       appear
       onExited={() => router!.navigate(-1)}
     >
-      <Container>
+      <Container play={1}>
         <Header
           ref={headerEl}
           isMarquee={isMarquee}
@@ -159,6 +170,7 @@ const Album = memo((props: IAlbumProps) => {
             </div>
           </Scroll>
         )}
+        <MusicNote ref={iconsRef} />
       </Container>
     </CSSTransition>
   );

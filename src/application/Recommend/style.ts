@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
-export const RecommendWrapper = styled.div`
+export const RecommendWrapper = styled.div<{ play: number }>`
   position: fixed;
   top: 90px;
-  bottom: 0;
+  bottom: ${(props) => (props.play > 0 ? "60px" : 0)};
   width: 100%;
 
   .before {
