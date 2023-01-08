@@ -10,9 +10,8 @@ function useShowPlayList() {
   }, shallowEqual);
 
   const dispatch = useDispatch<AppDispatch>();
-  const toggleShowPlayList = (e: any, data: boolean) => {
+  const toggleShowPlayList = (data: boolean) => {
     dispatch(changeShowPlayListAction(data));
-    e.stopPropagation();
   };
 
   return { toggleShowPlayList, showPlayList };

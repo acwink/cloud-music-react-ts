@@ -1,4 +1,10 @@
-import React, { memo, useCallback, useRef, useState } from "react";
+import React, {
+  memo,
+  TouchEventHandler,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import { CSSTransition } from "react-transition-group";
 
 import {
@@ -19,10 +25,20 @@ import { FunctionType } from "../../../types/shared";
 
 const PlayList = memo(() => {
   const [isShow, setIsShow] = useState(false);
+  // 是否允许滑动事件生效
+  const [canTouch, setCanTouch] = useState(true);
+
+  // 记录 touchStart 后记录y值
+  const [startY, setStartY] = useState(0);
+  // touchStart 事件以及被触发
+  const [initialed, setInitialed] = useState(false);
+  // 用户下滑的距离
+  const [distance, setDistance] = useState(0);
 
   const playListRef = useRef<HTMLDivElement>(null);
   const listWrapperRef = useRef<HTMLDivElement>(null);
   const confirmRef = useRef<{ show: FunctionType }>();
+  const listContentRef = useRef<HTMLDivElement>(null);
 
   // 使用hooks
   const { currentSong, changeCurrentIndex } = useCurrent();
@@ -105,6 +121,41 @@ const PlayList = memo(() => {
     );
   };
 
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!canTouch || initialed) return;
+    if (listWrapperRef.current) listWrapperRef.current.style.transition = "";
+    setStartY(e.nativeEvent.touches[0].pageY);
+    setInitialed(true);
+  };
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!canTouch || !initialed) return;
+
+    const distance = (e as any).nativeEvent.touches[0].pageY - startY;
+    if (distance < 0) return;
+    setDistance(distance);
+    if (listWrapperRef.current)
+      listWrapperRef.current.style.transform = `translate3d(0, ${distance}px,0)`;
+  };
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    setInitialed(false);
+
+    // 这里设置阈值为 150px
+    if (distance >= 150) {
+      toggleShowPlayList(false);
+    } else {
+      // 否则弹回去
+      if (listWrapperRef.current) {
+        listWrapperRef.current.style.transition = "all 0.3s";
+
+        listWrapperRef.current.style.transform = "translate3d(0,0,0)";
+      }
+    }
+  };
+
+  const handleScroll = (pos: any) => {
+    const state = pos.y === 0;
+    setCanTouch(state);
+  };
   return (
     <CSSTransition
       in={showPlayList}
@@ -118,12 +169,18 @@ const PlayList = memo(() => {
       <PlayListWrapper
         ref={playListRef}
         style={isShow ? { display: "block" } : { display: "none" }}
-        onClick={(e) => toggleShowPlayList(e, false)}
+        onClick={(e) => {
+          toggleShowPlayList(false);
+          e.stopPropagation();
+        }}
       >
         <div
           className="list_wrapper"
           ref={listWrapperRef}
           onClick={(e) => e.stopPropagation()}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           <ListHeader>
             {getPlayMode()}
@@ -132,7 +189,11 @@ const PlayList = memo(() => {
             </span>
           </ListHeader>
           <ScrollWrapper>
-            <Scroll>
+            <Scroll
+              ref={listContentRef}
+              onScroll={handleScroll}
+              bounceTop={false}
+            >
               <ListContent>
                 {playList.map((item: any, index: number) => {
                   return (

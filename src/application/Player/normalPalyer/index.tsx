@@ -200,7 +200,7 @@ function NormalPlayer(props: INormalPlayerProps) {
             </div>
             <div
               className="icon i-right"
-              onClick={(e) => toggleShowPlayList(e, true)}
+              onClick={() => toggleShowPlayList(true)}
             >
               <i className="iconfont">&#xe640;</i>
             </div>
