@@ -27,16 +27,16 @@ function useMode() {
     const newMode = (mode + 1) % 3;
 
     if (newMode === playMode.sequence) {
-      changePlayListAction(sequencePlayList);
+      dispatch(changePlayListAction(sequencePlayList));
       const index = findIndex(currentSong, sequencePlayList); // 用于找出当前正在播放的歌曲，在对应列表中的下标
-      changeCurrentIndexAction(index);
+      dispatch(changeCurrentIndexAction(index));
     } else if (newMode === playMode.loop) {
-      changePlayListAction(sequencePlayList);
+      dispatch(changePlayListAction(sequencePlayList));
     } else if (newMode === playMode.random) {
       const newList = shuffle(sequencePlayList); // 随机打乱列表，并返回
       const index = findIndex(currentSong, newList);
-      changePlayListAction(newList);
-      changeCurrentIndexAction(index);
+      dispatch(changePlayListAction(newList));
+      dispatch(changeCurrentIndexAction(index));
     }
 
     dispatch(changeModeAction(newMode));

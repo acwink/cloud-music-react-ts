@@ -28,7 +28,7 @@ const PlayList = memo(() => {
   const { currentSong, changeCurrentIndex } = useCurrent();
   const { playList, deleteSong, clearSongList } = usePlayList();
   const { showPlayList, toggleShowPlayList } = useShowPlayList();
-  const { mode } = useMode();
+  const { mode, changeMode } = useMode();
 
   const onEnterCB = useCallback(() => {
     // 让列表显示
@@ -71,11 +71,6 @@ const PlayList = memo(() => {
     );
   };
 
-  const changeMode = (e: React.MouseEvent<HTMLElement>) => {
-    let newMode = (mode + 1) % 3;
-    newMode = 1;
-  };
-
   const handleShowClear = () => {
     confirmRef.current?.show();
   };
@@ -100,10 +95,10 @@ const PlayList = memo(() => {
       <div>
         <i
           className="iconfont"
-          onClick={(e) => changeMode(e)}
+          onClick={() => changeMode()}
           dangerouslySetInnerHTML={{ __html: content }}
         ></i>
-        <span className="text" onClick={(e) => changeMode(e)}>
+        <span className="text" onClick={() => changeMode()}>
           {text}
         </span>
       </div>
