@@ -27,6 +27,7 @@ import singerImg from "./singer.png";
 import { CategoryDataContext, actionTypes } from "./data";
 import { Outlet } from "react-router";
 import withRouter from "@/hoc/withRouter";
+import usePlayList from "../Player/hooks/usePlayList";
 
 export type ISingersProps = Flatten<
   { router?: RouterType } & ReturnType<SingerMapDispatchToProps> &
@@ -48,6 +49,7 @@ const Singers = memo((props: ISingersProps) => {
     pullUpRefreshDispatch,
     pullDownRefreshDispatch,
   } = props;
+  const { playList } = usePlayList();
 
   // 拿到上下文存储的数据
   const { data, dispatch } = useContext(CategoryDataContext);
@@ -140,7 +142,7 @@ const Singers = memo((props: ISingersProps) => {
           oldVal={alpha}
         ></Horizen>
       </NavContainer>
-      <ListContainer play={1}>
+      <ListContainer play={playList.length}>
         {enterLoading && <Loading />}
 
         <Scroll

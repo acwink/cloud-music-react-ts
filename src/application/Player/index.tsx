@@ -27,6 +27,9 @@ const Player = memo(() => {
   // 记录当前的歌曲，以便下次重新渲染时比对是否是同一首歌曲
   const [preSong, setPreSong] = useState<Record<PropertyKey, any>>({});
 
+  // 判断当前歌曲是否播放
+  const songReady = useRef(true);
+
   const audioRef = useRef<HTMLAudioElement>(null);
   const toastRef = useRef<{ show: FunctionType }>(null);
 
@@ -132,10 +135,13 @@ const Player = memo(() => {
     }
     const current = playList[currentIndex];
     changeCurrentSong(current);
+    songReady.current = false;
     setPreSong(current);
     audioRef.current!.src = getSongUrl(current.id);
     setTimeout(() => {
-      audioRef.current?.play();
+      audioRef.current?.play().then(() => {
+        songReady.current = true;
+      });
     });
     togglePlaying(true);
 

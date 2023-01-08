@@ -35,12 +35,16 @@ const Album = memo((props: IAlbumProps) => {
   const iconsRef = useRef<{ startAnimation: FunctionType }>();
 
   const dispatch = useDispatch<AppDispatch>();
-  const { currentAlbum, enterLoading } = useSelector((state: RootState) => {
-    return {
-      currentAlbum: state.album.currentAlbum,
-      enterLoading: state.album.enterLoading,
-    };
-  }, shallowEqual);
+  const { currentAlbum, enterLoading, playList } = useSelector(
+    (state: RootState) => {
+      return {
+        currentAlbum: state.album.currentAlbum,
+        enterLoading: state.album.enterLoading,
+        playList: state.player.playList,
+      };
+    },
+    shallowEqual
+  );
 
   // UI
   const renderTopDesc = () => {
@@ -151,7 +155,7 @@ const Album = memo((props: IAlbumProps) => {
       appear
       onExited={() => router!.navigate(-1)}
     >
-      <Container play={1}>
+      <Container play={playList.length}>
         <Header
           ref={headerEl}
           isMarquee={isMarquee}

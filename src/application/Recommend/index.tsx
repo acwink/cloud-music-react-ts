@@ -15,11 +15,12 @@ import { Outlet } from "react-router-dom";
 const Recommend = memo(() => {
   // 发送异步网络请求
   const dispatch = useDispatch<AppDispatch>();
-  const { bannerList, recommendList, enterLoading } = useSelector(
+  const { bannerList, recommendList, enterLoading, playList } = useSelector(
     (state: RootState) => ({
       bannerList: state.recommend.bannerList,
       recommendList: state.recommend.recommendList,
       enterLoading: state.recommend.enterLoading,
+      playList: state.player.playList,
     })
   );
 
@@ -29,7 +30,7 @@ const Recommend = memo(() => {
   }, [dispatch]);
 
   return (
-    <RecommendWrapper play={1}>
+    <RecommendWrapper play={playList.length}>
       <Scroll onScroll={forceCheck}>
         <div>
           <Slider bannerList={bannerList}></Slider>

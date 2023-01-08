@@ -26,10 +26,11 @@ const Singer = memo((props: ISingerProps) => {
   const { router } = props;
   const [showStatus, setShowStatus] = useState(true);
 
-  const { artist, hotSongs } = useSelector((state: RootState) => {
+  const { artist, hotSongs, playList } = useSelector((state: RootState) => {
     return {
       artist: state.singer.artist,
       hotSongs: state.singer.songsOfArtist,
+      playList: state.player.playList,
     };
   }, shallowEqual);
 
@@ -120,7 +121,7 @@ const Singer = memo((props: ISingerProps) => {
       unmountOnExit
       onExited={() => router?.navigate(-1)}
     >
-      <Container play={1}>
+      <Container play={playList.length}>
         <Header
           ref={header}
           title={"头部"}
