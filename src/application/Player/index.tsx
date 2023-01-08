@@ -18,6 +18,8 @@ import { FunctionType } from "../../types/shared";
 import useMode from "./hooks/useMode";
 import { playMode } from "@/store/modules/player";
 import PlayList from "./playlist";
+import { getLyricRequest } from "@/api/modules/player";
+import Lyric from "@/utils/lyric";
 
 const Player = memo(() => {
   // 目前播放时间
@@ -62,15 +64,18 @@ const Player = memo(() => {
   const currentIndexRef = useRef(currentIndex);
   const currentSongRef = useRef(currentSong);
   const playingRef = useRef(playing);
-
+  const currentTimeRef = useRef(0);
   playListRef.current = playList;
   currentIndexRef.current = currentIndex;
   currentSongRef.current = currentSong;
   playingRef.current = playing;
+  currentTimeRef.current = currentTime;
 
   // 更新进度条
   const updateTime = useCallback((e: any) => {
     setCurrentTime(e.target.currentTime);
+    if (currentLyric.current)
+      currentLyric.current.seek(e.target.currentTime * 1000);
   }, []);
 
   // 进度条改变修改 percent 的回调函数
@@ -80,6 +85,9 @@ const Player = memo(() => {
     audioRef.current!.currentTime = newTime;
     if (!playing) {
       togglePlaying(true);
+    }
+    if (currentLyric.current) {
+      currentLyric.current.seek(newTime * 1000);
     }
   }, []);
 
@@ -125,6 +133,40 @@ const Player = memo(() => {
     }
   }, []);
 
+  // 歌词相关处理
+  const currentLyric = useRef<any>(null);
+  const currentLineNum = useRef(0);
+  const [currentPlayLyric, setPlayLyric] = useState("");
+  const handleLyric = ({ lineNum, txt }: { lineNum: number; txt: string }) => {
+    if (!currentLyric.current) return;
+    currentLineNum.current = lineNum;
+    setPlayLyric(txt);
+  };
+
+  // 获取歌词
+  const getLyric = (id: string | number) => {
+    let lyric = "";
+    if (currentLyric.current) {
+      currentLyric.current.stop();
+    }
+    getLyricRequest(id)
+      .then((res) => {
+        lyric = res.data.lrc.lyric;
+        if (!lyric) {
+          currentLyric.current = null;
+          return;
+        }
+        currentLyric.current = new Lyric(lyric, handleLyric);
+        currentLyric.current.play();
+        currentLineNum.current = 0;
+        currentLyric.current.seek(0);
+      })
+      .catch(() => {
+        songReady.current = true;
+        audioRef.current?.play();
+      });
+  };
+
   useEffect(() => {
     if (
       !playList.length ||
@@ -150,14 +192,17 @@ const Player = memo(() => {
         });
     });
     togglePlaying(true);
-
+    getLyric(current.id);
     setCurrentTime(0);
     setDuration((current.dt / 1000) | 0);
   }, [playList, currentIndex]);
 
   // 暂停逻辑
+
   useEffect(() => {
     playing ? audioRef.current?.play() : audioRef.current?.pause();
+    if (currentLyric.current)
+      currentLyric.current.togglePlay(currentTimeRef.current * 1000);
   }, [playing]);
 
   // 监听mode发生变化，显示弹窗
@@ -173,6 +218,9 @@ const Player = memo(() => {
           percent={percent}
           duration={duration}
           currentTime={currentTime}
+          currentLineNum={currentLineNum.current}
+          currentLyric={currentLyric.current}
+          currentPlayingLyric={currentPlayLyric}
           onProgressChange={onProgressChange}
           handleNext={handleNext}
           handlePrev={handlePre}
