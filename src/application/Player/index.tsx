@@ -17,6 +17,7 @@ import Toast from "@/baseUI/toast";
 import { FunctionType } from "../../types/shared";
 import useMode from "./hooks/useMode";
 import { playMode } from "@/store/modules/player";
+import PlayList from "./playlist";
 
 const Player = memo(() => {
   // 目前播放时间
@@ -186,6 +187,7 @@ const Player = memo(() => {
         onEnded={handleEnd}
       ></audio>
       <Toast ref={toastRef} text={modeText} />
+      <PlayList />
     </div>
   );
 });

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { CSSTransition } from "react-transition-group";
 import animations from "create-keyframe-animation";
 
@@ -20,6 +20,7 @@ import { FunctionType } from "@/types/shared";
 import { formatPlayTime } from "../../../utils/utils";
 import useMode from "../hooks/useMode";
 import { playMode } from "@/store/modules/player";
+import useShowPlayList from "../hooks/useShowPlayList";
 
 interface INormalPlayerProps {
   song: any;
@@ -38,6 +39,7 @@ function NormalPlayer(props: INormalPlayerProps) {
   const { fullScreen, toggleFullScreen } = useFullScreen();
   const { playing, togglePlaying } = usePlaying();
   const { mode, changeMode } = useMode();
+  const { toggleShowPlayList } = useShowPlayList();
 
   const normalPlayerRef = useRef<HTMLDivElement>(null);
   const cdWrapperRef = useRef<HTMLDivElement>(null);
@@ -196,7 +198,10 @@ function NormalPlayer(props: INormalPlayerProps) {
             <div className="icon i-right" onClick={handleNext}>
               <i className="iconfont">&#xe718;</i>
             </div>
-            <div className="icon i-right">
+            <div
+              className="icon i-right"
+              onClick={(e) => toggleShowPlayList(e, true)}
+            >
               <i className="iconfont">&#xe640;</i>
             </div>
           </Operators>

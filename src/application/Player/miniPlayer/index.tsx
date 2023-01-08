@@ -6,7 +6,9 @@ import { MiniPlayerContainer } from "./style";
 import ProgressCircle from "@/baseUI/progress/circle";
 import useFullScreen from "../hooks/useFullScreen";
 import usePlaying from "../hooks/usePlaying";
+
 import { getName } from "@/utils/utils";
+import useShowPlayList from "../hooks/useShowPlayList";
 
 interface IMiniPlayerProps {
   song: any;
@@ -17,6 +19,7 @@ const MiniPlayer = memo((props: IMiniPlayerProps) => {
   const { song, percent } = props;
   const { fullScreen, toggleFullScreen } = useFullScreen();
   const { playing, togglePlaying } = usePlaying();
+  const { toggleShowPlayList } = useShowPlayList();
 
   const miniPalyerRef = useRef<HTMLDivElement>(null);
   return (
@@ -71,7 +74,7 @@ const MiniPlayer = memo((props: IMiniPlayerProps) => {
             )}
           </ProgressCircle>
         </div>
-        <div className="control">
+        <div className="control" onClick={(e) => toggleShowPlayList(e, true)}>
           <i className="iconfont">&#xe640;</i>
         </div>
       </MiniPlayerContainer>
