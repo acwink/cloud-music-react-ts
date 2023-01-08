@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { RootState, AppDispatch } from "../../../store/index";
 import {
   changeCurrentIndexAction,
+  changeCurrentSongAction,
   changePlayListAction,
 } from "@/store/modules/player";
 import {
@@ -57,10 +58,19 @@ function usePlayList() {
     [playList, squenceList, currentIndex]
   );
 
+  const clearSongList = () => {
+    dispatch(changeCurrentIndexAction(-1));
+    dispatch(changePalyingAction(false));
+    dispatch(changePlayListAction([]));
+    dispatch(changeSequencePlayListAction([]));
+    dispatch(changeCurrentSongAction({}));
+  };
+
   return {
     playList,
     changePlayList,
     deleteSong,
+    clearSongList,
   };
 }
 

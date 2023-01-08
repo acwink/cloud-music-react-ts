@@ -14,15 +14,19 @@ import usePlayList from "../hooks/usePlayList";
 import useMode from "../hooks/useMode";
 import { playMode } from "@/store/modules/player";
 import { getName } from "@/utils/utils";
+import Confirm from "@/baseUI/confirm";
+import { FunctionType } from "../../../types/shared";
 
 const PlayList = memo(() => {
+  const [isShow, setIsShow] = useState(false);
+
   const playListRef = useRef<HTMLDivElement>(null);
   const listWrapperRef = useRef<HTMLDivElement>(null);
-  const [isShow, setIsShow] = useState(false);
+  const confirmRef = useRef<{ show: FunctionType }>();
 
   // 使用hooks
   const { currentSong, changeCurrentIndex } = useCurrent();
-  const { playList, deleteSong } = usePlayList();
+  const { playList, deleteSong, clearSongList } = usePlayList();
   const { showPlayList, toggleShowPlayList } = useShowPlayList();
   const { mode } = useMode();
 
@@ -70,6 +74,14 @@ const PlayList = memo(() => {
   const changeMode = (e: React.MouseEvent<HTMLElement>) => {
     let newMode = (mode + 1) % 3;
     newMode = 1;
+  };
+
+  const handleShowClear = () => {
+    confirmRef.current?.show();
+  };
+
+  const handleConfirmClear = () => {
+    clearSongList();
   };
 
   const getPlayMode = () => {
@@ -120,7 +132,9 @@ const PlayList = memo(() => {
         >
           <ListHeader>
             {getPlayMode()}
-            <span className="iconfont clear">&#xe63d;</span>
+            <span className="iconfont clear" onClick={handleShowClear}>
+              &#xe63d;
+            </span>
           </ListHeader>
           <ScrollWrapper>
             <Scroll>
@@ -152,6 +166,11 @@ const PlayList = memo(() => {
             </Scroll>
           </ScrollWrapper>
         </div>
+        <Confirm
+          ref={confirmRef}
+          text={"是否确认全部删除?"}
+          handleConfirm={handleConfirmClear}
+        />
       </PlayListWrapper>
     </CSSTransition>
   );
