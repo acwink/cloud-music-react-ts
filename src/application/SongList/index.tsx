@@ -2,14 +2,10 @@ import React, { ForwardedRef, MouseEvent } from "react";
 import { SongItem, SongList } from "./style";
 import { getName } from "@/utils/utils";
 import { findIndex } from "../../utils/utils";
-import { useSelector, shallowEqual, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "../../store/index";
+
 import { FunctionType } from "../../types/shared";
-import {
-  changeCurrentIndexAction,
-  changePlayListAction,
-  changeSequencePlayListAction,
-} from "@/store/modules/player";
+import usePlayList from "../Player/hooks/usePlayList";
+import useCurrent from "../Player/hooks/useCurrent";
 
 interface ISongListProps {
   collectCount?: number;
@@ -25,31 +21,25 @@ const SongsList = React.forwardRef(
 
     const totalCount = songs.length;
 
-    const dispatch = useDispatch<AppDispatch>();
-    const { playList } = useSelector((state: RootState) => {
-      return {
-        currentIndex: state.player.currentIndex,
-        playList: state.player.playList,
-      };
-    }, shallowEqual);
-
+    const { playList, changePlayList, changeSequenceList } = usePlayList();
+    const { changeCurrentIndex } = useCurrent();
     const selectItem = (e: MouseEvent, index: number) => {
       const idx = findIndex(songs[index], playList);
       if (idx !== -1) {
-        dispatch(changeCurrentIndexAction(idx));
+        changeCurrentIndex(idx);
       } else {
         const newList = [...playList, songs[index]];
-        dispatch(changeCurrentIndexAction(newList.length - 1));
-        dispatch(changePlayListAction(newList));
+        changeCurrentIndex(newList.length - 1);
+        changePlayList(newList);
       }
       if (musicAnimation)
         musicAnimation(e.nativeEvent.clientX, e.nativeEvent.clientY);
     };
 
     const selectItemAll = () => {
-      dispatch(changeSequencePlayListAction(songs));
-      dispatch(changePlayListAction(songs));
-      dispatch(changeCurrentIndexAction(0));
+      changeSequenceList(songs);
+      changePlayList(songs);
+      changeCurrentIndex(0);
     };
 
     const songList = (list: any) => {

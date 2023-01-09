@@ -27,7 +27,11 @@ function usePlayList() {
 
   const dispatch = useDispatch<AppDispatch>();
   const changePlayList = useCallback((data: any) => {
-    dispatch(changePalyingAction(data));
+    dispatch(changePlayListAction(data));
+  }, []);
+
+  const changeSequenceList = useCallback((data: any) => {
+    dispatch(changeSequencePlayListAction(data));
   }, []);
 
   const deleteSong = useCallback(
@@ -88,6 +92,14 @@ function usePlayList() {
 
     dispatch(changePlayListAction(newPlayList));
     dispatch(changeCurrentIndexAction(newCurrentIndex));
+
+    // 处理sequencelist
+    const fsIndex = findIndex(song, squenceList);
+    if (fsIndex === currentIndex && fsIndex !== -1) return;
+    if (fsIndex === -1) {
+      const newSequenceList = [...squenceList, song];
+      dispatch(changeSequencePlayListAction(newSequenceList));
+    }
   };
 
   const clearSongList = () => {
@@ -104,6 +116,7 @@ function usePlayList() {
     deleteSong,
     clearSongList,
     insertSong,
+    changeSequenceList,
   };
 }
 
