@@ -74,7 +74,13 @@ const MiniPlayer = memo((props: IMiniPlayerProps) => {
             )}
           </ProgressCircle>
         </div>
-        <div className="control" onClick={() => toggleShowPlayList(true)}>
+        <div
+          className="control"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleShowPlayList(true);
+          }}
+        >
           <i className="iconfont">&#xe640;</i>
         </div>
       </MiniPlayerContainer>

@@ -61,3 +61,9 @@ export interface ApiSingerInfo extends ApiRes {
   hotSongs: any;
   more: boolean;
 }
+
+export interface ApiSearchHotInfo extends ApiRes {
+  results: {
+    hots: any[];
+  };
+}

@@ -2,11 +2,13 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import type { RouteObject } from "react-router-dom";
 import Home from "../application/Home";
-import Recommend from "../application/Recommend";
-import Singers from "../application/Singers";
-import Rank from "../application/Rank";
-import Album from "@/application/Album";
-import Singer from "@/application/Singer";
+
+const Recommend = React.lazy(() => import("../application/Recommend"));
+const Singers = React.lazy(() => import("../application/Singers"));
+const Rank = React.lazy(() => import("../application/Rank"));
+const Album = React.lazy(() => import("@/application/Album"));
+const Singer = React.lazy(() => import("@/application/Singer"));
+const Search = React.lazy(() => import("@/application/Search"));
 
 const routes: RouteObject[] = [
   {
@@ -47,6 +49,15 @@ const routes: RouteObject[] = [
             element: <Album />,
           },
         ],
+      },
+      {
+        path: "search",
+        element: <Search />,
+      },
+      {
+        path: "album/:id",
+        index: true,
+        element: <Album />,
       },
     ],
   },

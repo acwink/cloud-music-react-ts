@@ -1,6 +1,8 @@
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { useCallback } from "react";
 import { RootState, AppDispatch } from "../../../store/index";
+import { getSongDetailRequest } from "../../../api/modules/search";
+import { findIndex } from "../../../utils/utils";
 import {
   changeCurrentIndexAction,
   changeCurrentSongAction,
@@ -58,6 +60,36 @@ function usePlayList() {
     [playList, squenceList, currentIndex]
   );
 
+  const insertSong = async (id: string | number) => {
+    // 1. 请求详细数据
+    const res = await getSongDetailRequest(id);
+    // 插入歌曲到播放列表
+    // 看是歌曲是否存在
+    const song = res.data.songs[0];
+    const fpIndex = findIndex(song, playList);
+    // 如果时当前歌曲直接不处理
+    if (fpIndex === currentIndex && currentIndex !== -1) return;
+
+    // 不存在该曲子
+    const newPlayList = [...playList];
+    // 把歌曲放到当前播放曲目的下一个位置
+    newPlayList.splice(currentIndex + 1, 0, song);
+    let newCurrentIndex = currentIndex + 1;
+
+    // 如果列表中以及存在该曲子
+    if (fpIndex > -1) {
+      if (currentIndex > fpIndex) {
+        newPlayList.splice(fpIndex, 1);
+        newCurrentIndex--;
+      } else {
+        newPlayList.splice(fpIndex, 1);
+      }
+    }
+
+    dispatch(changePlayListAction(newPlayList));
+    dispatch(changeCurrentIndexAction(newCurrentIndex));
+  };
+
   const clearSongList = () => {
     dispatch(changeCurrentIndexAction(-1));
     dispatch(changePalyingAction(false));
@@ -71,6 +103,7 @@ function usePlayList() {
     changePlayList,
     deleteSong,
     clearSongList,
+    insertSong,
   };
 }
 

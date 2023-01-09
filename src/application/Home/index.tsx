@@ -1,10 +1,15 @@
+import withRouter from "@/hoc/withRouter";
+import { RouterType } from "@/types/shared";
 import React, { useCallback } from "react";
 import { memo } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 
 import { HomeTabItemWrapper, HomeTabWrapper, HomeTopWrapper } from "./style";
 
-const Home = memo(() => {
+interface IHomeProps {
+  router?: RouterType;
+}
+const Home = memo((props: IHomeProps) => {
   const switchTabHandle = useCallback(({ isActive = false }) => {
     if (isActive) return "selected";
     return;
@@ -15,7 +20,12 @@ const Home = memo(() => {
       <HomeTopWrapper>
         <span className="iconfont menu">&#xe65c;</span>
         <span className="title">WebApp</span>
-        <span className="iconfont search">&#xe62b;</span>
+        <span
+          className="iconfont search"
+          onClick={() => props.router?.navigate("/search")}
+        >
+          &#xe62b;
+        </span>
       </HomeTopWrapper>
 
       <HomeTabWrapper>
@@ -40,4 +50,4 @@ const Home = memo(() => {
   );
 });
 
-export default Home;
+export default withRouter(Home);
